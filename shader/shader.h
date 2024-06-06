@@ -8,6 +8,7 @@ public:
     using PathMap = std::unordered_map<std::string, const std::string>;
 public:
     Shader(const PathMap& path_map);
+    ~Shader();
     
     std::string read_file(const std::string& path);
 

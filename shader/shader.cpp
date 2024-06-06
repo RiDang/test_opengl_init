@@ -101,11 +101,15 @@ void Shader::use(){
 }
 
 
+Shader::~Shader(){
+    // glDeleteProgram(shader_program_); // segment_fault 
+}
+
 void Shader::set_bool(const std::string& name, const bool value){
 
 }
 void Shader::set_int(const std::string& name, const int value){
-
+    glUniform1i(glGetUniformLocation(shader_program_, name.c_str()), value);
 }
 void Shader::set_float(const std::string& name, const float value){
     glUniform1f(glGetUniformLocation(shader_program_, name.c_str()), value);
