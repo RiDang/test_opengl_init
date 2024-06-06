@@ -1,3 +1,0 @@
-/home/ubt/Projects/opengl/test_1/build/CMakeFiles/rebuild_cache.dir
-/home/ubt/Projects/opengl/test_1/build/CMakeFiles/test.dir
-/home/ubt/Projects/opengl/test_1/build/CMakeFiles/edit_cache.dir

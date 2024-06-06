@@ -1,1 +1,0 @@
-/usr/bin/c++  -g  -rdynamic CMakeFiles/test.dir/3rd/glad-3.3/src/glad.c.o CMakeFiles/test.dir/main.cpp.o  -o test -lGL -lGLU /usr/lib/x86_64-linux-gnu/libglfw.so.3.2 -ldl 
