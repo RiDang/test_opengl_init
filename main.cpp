@@ -55,8 +55,8 @@ int main()
 
     GLFWwindow* window = InitWindow();
     const std::string ROOT_PATH = "/home/ubt/Projects/opengl/test_opengl_init";
-    const std::string vertex_path = ROOT_PATH + "/shader/shader_vertex_1_4.vs";
-    const std::string frag_path = ROOT_PATH + "/shader/shader_fragment_1_4.fs";
+    const std::string vertex_path = ROOT_PATH + "/shader/shader_vertex_1_5.vs";
+    const std::string frag_path = ROOT_PATH + "/shader/shader_fragment_1_5.fs";
     const std::string texture_wall_path = ROOT_PATH + "/data/wall.jpg";
     const std::string texture_face_path = ROOT_PATH + "/data/awesomeface.png";
     Shader::PathMap path_map{{"vertex",vertex_path},

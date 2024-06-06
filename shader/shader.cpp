@@ -47,7 +47,7 @@ Shader::Shader(const PathMap& path_map){
         std::cout << " vertex_shader compile fail, info " << infoLog << std::endl;
         exit(-1);
     }
-
+ 
 
     // - fragement shader
     unsigned int frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -65,7 +65,7 @@ Shader::Shader(const PathMap& path_map){
     glAttachShader(shader_program, vertex_shader);
     glAttachShader(shader_program, frag_shader);
     glLinkProgram(shader_program);
-    glGetShaderiv(shader_program, GL_LINK_STATUS, &success);
+    glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
     if(!success){
         glGetShaderInfoLog(shader_program, 512, NULL, infoLog);
         std::cout << " shader_program compile fail, info " << infoLog << std::endl;
