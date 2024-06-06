@@ -6,8 +6,14 @@ project(test)
  
 find_package(glfw3 REQUIRED)
 find_package( OpenGL REQUIRED )
-include_directories( ${OPENGL_INCLUDE_DIRS} "3rd/glad-3.3/include/")
-file(GLOB project_file 3rd/glad-3.3/src/glad.c main.cpp)
+# include_directories( )
+file(GLOB project_file  main.cpp
+                        3rd/glad-3.3/src/glad.c 
+                        shader/shader.cpp)
 add_executable(${PROJECT_NAME} ${project_file})
+
+target_include_directories(${PROJECT_NAME} PUBLIC ${OPENGL_INCLUDE_DIRS} 
+                                            "3rd/glad-3.3/include/"
+                                            "shader/")
  
 target_link_libraries(${PROJECT_NAME}  ${OPENGL_LIBRARIES} glfw dl)
