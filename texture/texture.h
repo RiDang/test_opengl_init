@@ -44,7 +44,7 @@ Texture::Texture(const std::string& img_path){
     }else{
         std::cout << " error color_format " << img_path << std::endl;
         exit(-1);
-    }
+    };
 
     // 加载纹理
     int width, height, nrChannels;
@@ -57,8 +57,10 @@ Texture::Texture(const std::string& img_path){
     }
     else
     {
-        std::cout << " - read image fail, path " << img_path << std::endl;
+        std::cout << "ERROR: Read image fail, path " << img_path << std::endl;
     }
+
+    std::cout << " ==> error info " << glGetError() << std::endl;
 
     stbi_image_free(data);
     texture_ = texture;
