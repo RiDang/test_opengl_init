@@ -108,9 +108,15 @@ Shader::~Shader(){
 void Shader::set_bool(const std::string& name, const bool value){
 
 }
+
 void Shader::set_int(const std::string& name, const int value){
     glUniform1i(glGetUniformLocation(shader_program_, name.c_str()), value);
 }
+
 void Shader::set_float(const std::string& name, const float value){
     glUniform1f(glGetUniformLocation(shader_program_, name.c_str()), value);
+}
+
+void Shader::set_mat4(const std::string& name, const float* mat4){
+    glUniformMatrix4fv(glGetUniformLocation(shader_program_, name.c_str()), 1, GL_FALSE, mat4);
 }

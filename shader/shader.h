@@ -16,6 +16,7 @@ public:
     void set_bool(const std::string& name, const bool value);
     void set_int(const std::string& name, const int value);
     void set_float(const std::string& name, const float value);
+    void set_mat4(const std::string& name, const float* mat4);
 
 public:
     unsigned int shader_program_;

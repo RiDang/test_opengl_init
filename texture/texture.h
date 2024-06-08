@@ -60,7 +60,6 @@ Texture::Texture(const std::string& img_path){
         std::cout << "ERROR: Read image fail, path " << img_path << std::endl;
     }
 
-    std::cout << " ==> error info " << glGetError() << std::endl;
 
     stbi_image_free(data);
     texture_ = texture;

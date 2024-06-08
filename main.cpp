@@ -16,6 +16,8 @@
 #include "texture/texture.h"
 
 
+const int kWidth = 800, kHeight = 600;
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
@@ -27,10 +29,28 @@ void processInput(GLFWwindow* window){
     }
 }
 
+void show_mat4(const glm::mat4& mat4){
+    std::cout << "[";
+    for(size_t i=0; i<4; i++){
+        std::cout << "[";
+        for(size_t j=0; j<4; j++){
+            if(j+1 < 4)
+              std::cout << mat4[j][i] << ", ";
+            else
+              std::cout << mat4[j][i];
+        }
+
+        if(i < 3)
+            std::cout << "]," << std::endl;
+        else
+            std::cout << "]";
+    }
+    std::cout << "]" << std::endl;
+
+}
 
 GLFWwindow* InitWindow(){
     // ============== 窗口初始化 start
-    const int kWdith = 800, kHeight = 600;
 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -39,7 +59,7 @@ GLFWwindow* InitWindow(){
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
-    GLFWwindow* window = glfwCreateWindow(kWdith, kHeight, "LearnOpenGL", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(kWidth, kHeight, "LearnOpenGL", NULL, NULL);
     if (window == NULL){
         std::cout << "Failed to create window" << std::endl;
         glfwTerminate();
@@ -63,32 +83,76 @@ int main()
     // ============== 窗口初始化 end
 
     GLFWwindow* window = InitWindow();
-    glGetError();
-    std::cout << " ==> -1 error info " << glGetError() << std::endl;    
+    glGetError(); 
 
     const std::string ROOT_PATH = "/home/ubt/Projects/opengl/test_opengl_init";
-    const std::string vertex_path = ROOT_PATH + "/shader/shader_vertex_1_5.vs";
-    const std::string frag_path = ROOT_PATH + "/shader/shader_fragment_1_5.fs";
+    const std::string vertex_path = ROOT_PATH + "/shader/shader_vertex_1_6.vs";
+    const std::string frag_path = ROOT_PATH + "/shader/shader_fragment_1_6.fs";
     const std::string texture_wall_path = ROOT_PATH + "/data/wall.jpg";
     const std::string texture_face_path = ROOT_PATH + "/data/awesomeface.png";
     Shader::PathMap path_map{{"vertex",vertex_path},
                             {"frag",frag_path}};
+    
+    glEnable(GL_DEPTH_TEST);
     Shader shader(path_map);
 
-    std::cout << " ==> 0 error info " << glGetError() << std::endl;    
     // ===========================
     float vertices[] = {
-        // positions          // colors           // texture coords
-         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
-    };
-    unsigned int indices[] = {
-        0, 1, 3, // first triangle
-        1, 2, 3  // second triangle
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
 
+    glm::vec3 cubePositions[] = {
+        glm::vec3( 0.0f,  0.0f,  0.0f), 
+        glm::vec3( 2.0f,  5.0f, -15.0f), 
+        glm::vec3(-1.5f, -2.2f, -2.5f),  
+        glm::vec3(-3.8f, -2.0f, -12.3f),  
+        glm::vec3( 2.4f, -0.4f, -3.5f),  
+        glm::vec3(-1.7f,  3.0f, -7.5f),  
+        glm::vec3( 1.3f, -2.0f, -2.5f),  
+        glm::vec3( 1.5f,  2.0f, -2.5f), 
+        glm::vec3( 1.5f,  0.2f, -1.5f), 
+        glm::vec3(-1.3f,  1.0f, -1.5f)  
+        };
     // float vertices[] = {
     //     -0.5f, -0.5f, 0.0f, // left  
     //     1.0f, 0.0f, 0.0f, 0, 0,
@@ -113,33 +177,34 @@ int main()
 
     glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBOs[1]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    int SIZEs[] = {8, 3, 3, 2}; // 总长度，点长度，颜色长度，纹理长度
+    int SIZEs[] = {5, 3, 2}; // 总长度，点长度，颜色长度，纹理长度
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, SIZEs[0]*sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, SIZEs[0]*sizeof(float), (void*)(SIZEs[1] * sizeof(float)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, SIZEs[0]*sizeof(float), (void*)((SIZEs[1] ) * sizeof(float)));
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, SIZEs[0]*sizeof(float), (void*)((SIZEs[1] + SIZEs[2]) * sizeof(float)));
-    glEnableVertexAttribArray(2);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-
-    std::cout << " ==> 1 error info " << glGetError() << std::endl;    
 
     
     stbi_set_flip_vertically_on_load(true);
     Texture texture_1(texture_wall_path);
     Texture texture_2(texture_face_path);
 
-    std::cout << " ==> 2 error info " << glGetError() << std::endl;    
     // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
     // -------------------------------------------------------------------------------------------
     shader.use(); 
+    shader.set_int("ourTex_1", 0);
     shader.set_int("ourTex_2", 1);
+
+
+
+    // show_mat4(model);
+    // std::cout << std::endl;
+    // show_mat4(view);
+    // std::cout << std::endl;
+    // show_mat4(projection);
+    // std::cout << std::endl;
+
+
 
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -150,7 +215,7 @@ int main()
 
         processInput(window);
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
         glActiveTexture(GL_TEXTURE0);
@@ -158,32 +223,44 @@ int main()
         glActiveTexture(GL_TEXTURE1);
         texture_2.use();
 
+
+
+        float cur_time = glfwGetTime();
+
+        glm::mat4 model         = glm::mat4(1.0f);
+        glm::mat4 view          =glm::mat4(1.0f);
+        glm::mat4 projection    =glm::mat4(1.0f);
+        model = glm::rotate(model, cur_time, glm::vec3(0.50f, 1.0f, 0.0f));
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+        projection = glm::perspective(glm::radians(45.0f), (float)kWidth / (float)kHeight, 0.1f, 100.0f);
+        // projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
+        projection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 100.0f);
+
         shader.use();
+        shader.set_mat4("model", glm::value_ptr(model));
+        shader.set_mat4("view", glm::value_ptr(view));
+        shader.set_mat4("projection", glm::value_ptr(projection));
 
-        if (sum_dt > 0.1){
-            glm::mat4 trans = glm::mat4(1.0f);
-
-            float timeVallue = glfwGetTime();
-            trans = glm::scale(trans, glm::vec3(sin(timeVallue), sin(timeVallue), 1.0f));
-            trans = glm::rotate(trans, timeVallue, glm::vec3(0.0f, 0.0f, 1.0f));
-            trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
-            unsigned int trans_loc = glGetUniformLocation(shader.shader_program_, "transform");
-            glUniformMatrix4fv(trans_loc, 1, GL_FALSE, glm::value_ptr(trans));
-            sum_dt = 0;
-        }        
-        glBindVertexArray(VAOs[0]);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        for(size_t i=0; i< 10; i++){
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, cubePositions[i]);
+            model = glm::rotate(model, i * cur_time + cur_time, glm::vec3(1.0f, 0.3f, 0.5f));
+            shader.set_mat4("model", glm::value_ptr(model));
+            glBindVertexArray(VAOs[0]);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        }
 
 
-        auto end = std::chrono::high_resolution_clock::now();
-        auto dt = std::chrono::duration<double>(end - start).count();   
-        sum_dt += dt;     
-        std::cout << " - fps: " << 1 / dt << std::endl;
+        // auto end = std::chrono::high_resolution_clock::now();
+        // auto dt = std::chrono::duration<double>(end - start).count();   
+        // sum_dt += dt;     
+        // std::cout << " - fps: " << 1 / dt << std::endl;
 
         glfwSwapBuffers(window);
         glfwPollEvents();
 
-        start = std::chrono::high_resolution_clock::now();
+        // start = std::chrono::high_resolution_clock::now();
     }
 
     glDeleteVertexArrays(3, VAOs);

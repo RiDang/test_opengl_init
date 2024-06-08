@@ -63,8 +63,7 @@ int main()
     // ============== 窗口初始化 end
 
     GLFWwindow* window = InitWindow();
-    glGetError();
-    std::cout << " ==> -1 error info " << glGetError() << std::endl;    
+    glGetError(); 
 
     const std::string ROOT_PATH = "/home/ubt/Projects/opengl/test_opengl_init";
     const std::string vertex_path = ROOT_PATH + "/shader/shader_vertex_1_5.vs";
@@ -74,8 +73,7 @@ int main()
     Shader::PathMap path_map{{"vertex",vertex_path},
                             {"frag",frag_path}};
     Shader shader(path_map);
-
-    std::cout << " ==> 0 error info " << glGetError() << std::endl;    
+ 
     // ===========================
     float vertices[] = {
         // positions          // colors           // texture coords
@@ -127,15 +125,12 @@ int main()
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-
-    std::cout << " ==> 1 error info " << glGetError() << std::endl;    
-
-    
+  
+ 
     stbi_set_flip_vertically_on_load(true);
     Texture texture_1(texture_wall_path);
     Texture texture_2(texture_face_path);
-
-    std::cout << " ==> 2 error info " << glGetError() << std::endl;    
+  
     // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
     // -------------------------------------------------------------------------------------------
     shader.use(); 
