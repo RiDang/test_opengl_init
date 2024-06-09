@@ -18,15 +18,13 @@
 
 
 typedef struct {
-    glm::dvec2 last_left_down;
-    glm::dvec2 last_right_down;
-    bool is_last_left_down{false};
-    bool is_last_right_down{false};
+    glm::dvec2 last_down;
+    bool is_last_down{false};
 } MouseInfo;
 
 
 const int kWidth = 800, kHeight = 600;
-MouseInfo mouse_info;
+MouseInfo mouse_left_info, mouse_right_info;
 Camera camera;
 float delta_time = 0.5f;
 float last_time = 0.0f;
@@ -73,27 +71,42 @@ void processInput(GLFWwindow* window){
         camera.info();
     }
 
+    // ====== 鼠标右键设置 ===========
 
-    if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS){
-        double x, y;
-        glfwGetCursorPos(window, &x, &y);
-        glm::dvec2 cur_right_pos = glm::vec2(x, y);
-        if(mouse_info.is_last_right_down){
-            glm::dvec2 delta_pos = cur_right_pos - mouse_info.last_right_down;
-            delta_pos *= 0.1;
-            camera.update_camera((float)(delta_pos[1]), (float)(delta_pos[0]));
-            camera.info();
+
+    auto process_mouse_key = [&](unsigned int left_or_right, MouseInfo& mouse_info){
+        if(glfwGetMouseButton(window, left_or_right) == GLFW_PRESS){
+            double x, y;
+            glfwGetCursorPos(window, &x, &y);
+            glm::dvec2 cur_pos = glm::vec2(x, y);
+            if(mouse_info.is_last_down){
+                glm::dvec2 delta_pos = cur_pos - mouse_info.last_down;
+                delta_pos *= 0.1;
+                // camera.update_camera((float)(delta_pos[1]), (float)(delta_pos[0]));
+                if(left_or_right == GLFW_MOUSE_BUTTON_RIGHT){
+                    camera.update_camera((float)(delta_pos[1]), (float)(delta_pos[0]));
+                }
+                else{
+                    camera.update_object((float)(delta_pos[1]), (float)(delta_pos[0]));
+                }
+
+            }
+            else{
+                mouse_info.is_last_down = true;
+            }
+            mouse_info.last_down = cur_pos;
+
         }
-        else{
-            mouse_info.is_last_right_down = true;
+
+        if(glfwGetMouseButton(window, left_or_right) == GLFW_RELEASE){
+            mouse_info.is_last_down = false;
         }
-        mouse_info.last_right_down = cur_right_pos;
+    };
 
-    }
+    process_mouse_key(GLFW_MOUSE_BUTTON_RIGHT, mouse_right_info);
+    process_mouse_key(GLFW_MOUSE_BUTTON_LEFT, mouse_left_info);
 
-    if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE){
-        mouse_info.is_last_right_down = false;
-    }
+    // ====== 鼠标左设置 ===========
     
 }
 
@@ -147,7 +160,6 @@ GLFWwindow* InitWindow(){
 
 int main()
 {
-
     // ============== 窗口初始化 end
 
     GLFWwindow* window = InitWindow();
@@ -306,7 +318,7 @@ int main()
         float cam_z = cos(cur_time) * radius;
         // view = glm::lookAt(glm::vec3(cam_x, 10.0, cam_z), glm::vec3(0, 0, 0), glm::vec3(0.0f, -1.0f, 0.0f));
         // view = glm::lookAt(camera_pos, camera_end, camera_up);
-        view = camera.view_;
+        view = camera.view_mat4_;
         projection = glm::perspective(glm::radians(45.0f), (float)kWidth / (float)kHeight, 0.1f, 100.0f);
         // projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
         // projection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 100.0f);
