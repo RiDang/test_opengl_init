@@ -14,19 +14,87 @@
 
 #include "shader/shader.h"
 #include "texture/texture.h"
+#include "camera/camera.h"
+
+
+typedef struct {
+    glm::dvec2 last_left_down;
+    glm::dvec2 last_right_down;
+    bool is_last_left_down{false};
+    bool is_last_right_down{false};
+} MouseInfo;
 
 
 const int kWidth = 800, kHeight = 600;
+MouseInfo mouse_info;
+Camera camera;
+float delta_time = 0.5f;
+float last_time = 0.0f;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
 
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset ){
+    camera.update_forward(yoffset);
+}
+
+
 void processInput(GLFWwindow* window){
-    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS){
+
+    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS ||
+        glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS ){
         glfwSetWindowShouldClose(window, true);
     }
+    // float  speed = 0.05f;;
+    float  speed = delta_time * 10;
+    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
+        camera.update_forward(speed);
+        camera.info();
+
+    }
+    else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
+        camera.update_forward(speed);
+        camera.info();
+
+    }
+    else if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
+        camera.update_camera(0, -speed);
+        camera.info();
+    }
+    else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
+        camera.update_camera(0, speed);
+        camera.info();
+    }
+
+    if(glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS){
+        camera.reset();
+        camera.info();
+    }
+
+
+    if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS){
+        double x, y;
+        glfwGetCursorPos(window, &x, &y);
+        glm::dvec2 cur_right_pos = glm::vec2(x, y);
+        if(mouse_info.is_last_right_down){
+            glm::dvec2 delta_pos = cur_right_pos - mouse_info.last_right_down;
+            delta_pos *= 0.1;
+            camera.update_camera((float)(delta_pos[1]), (float)(delta_pos[0]));
+            camera.info();
+        }
+        else{
+            mouse_info.is_last_right_down = true;
+        }
+        mouse_info.last_right_down = cur_right_pos;
+
+    }
+
+    if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE){
+        mouse_info.is_last_right_down = false;
+    }
+    
 }
 
 void show_mat4(const glm::mat4& mat4){
@@ -86,8 +154,8 @@ int main()
     glGetError(); 
 
     const std::string ROOT_PATH = "/home/ubt/Projects/opengl/test_opengl_init";
-    const std::string vertex_path = ROOT_PATH + "/shader/shader_vertex_1_6.vs";
-    const std::string frag_path = ROOT_PATH + "/shader/shader_fragment_1_6.fs";
+    const std::string vertex_path = ROOT_PATH + "/shader/shader_vertex_1_7.vs";
+    const std::string frag_path = ROOT_PATH + "/shader/shader_fragment_1_7.fs";
     const std::string texture_wall_path = ROOT_PATH + "/data/wall.jpg";
     const std::string texture_face_path = ROOT_PATH + "/data/awesomeface.png";
     Shader::PathMap path_map{{"vertex",vertex_path},
@@ -205,13 +273,16 @@ int main()
     // std::cout << std::endl;
 
 
-
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     auto start = std::chrono::high_resolution_clock::now();
     float sum_dt = 0.0;
     while(!glfwWindowShouldClose(window)){
-        
+        float cur_time = glfwGetTime();
+        delta_time = cur_time - last_time;
+        last_time = cur_time;
+
+        glfwSetScrollCallback(window, scroll_callback);
 
         processInput(window);
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -224,17 +295,21 @@ int main()
         texture_2.use();
 
 
-
-        float cur_time = glfwGetTime();
-
         glm::mat4 model         = glm::mat4(1.0f);
         glm::mat4 view          =glm::mat4(1.0f);
         glm::mat4 projection    =glm::mat4(1.0f);
-        model = glm::rotate(model, cur_time, glm::vec3(0.50f, 1.0f, 0.0f));
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+        // view = glm::translate(view, glm::vec3(0.0f, 0.0f, -10.0f));
+        // view = glm::rotate(view, -(float)cur_time, glm::vec3(0.0f, 1.0f, 0.0f));
+        float radius = 10.0f;
+        float cam_x = sin(cur_time) * radius;
+        float cam_z = cos(cur_time) * radius;
+        // view = glm::lookAt(glm::vec3(cam_x, 10.0, cam_z), glm::vec3(0, 0, 0), glm::vec3(0.0f, -1.0f, 0.0f));
+        // view = glm::lookAt(camera_pos, camera_end, camera_up);
+        view = camera.view_;
         projection = glm::perspective(glm::radians(45.0f), (float)kWidth / (float)kHeight, 0.1f, 100.0f);
         // projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
-        projection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 100.0f);
+        // projection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 100.0f);
 
         shader.use();
         shader.set_mat4("model", glm::value_ptr(model));
@@ -244,7 +319,8 @@ int main()
         for(size_t i=0; i< 10; i++){
             model = glm::mat4(1.0f);
             model = glm::translate(model, cubePositions[i]);
-            model = glm::rotate(model, i * cur_time + cur_time, glm::vec3(1.0f, 0.3f, 0.5f));
+            // model = glm::rotate(model, i * cur_time + cur_time, glm::vec3(1.0f, 0.3f, 0.5f));
+            model = glm::rotate(model, i * 0.1f, glm::vec3(1.0f, 0.3f, 0.5f));
             shader.set_mat4("model", glm::value_ptr(model));
             glBindVertexArray(VAOs[0]);
             glDrawArrays(GL_TRIANGLES, 0, 36);
