@@ -16,7 +16,6 @@
 #include "texture/texture.h"
 #include "camera/camera.h"
 
-// - test
 
 typedef struct {
     glm::dvec2 last_down;
